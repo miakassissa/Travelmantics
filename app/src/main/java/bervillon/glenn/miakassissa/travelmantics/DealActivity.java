@@ -14,9 +14,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -148,6 +150,22 @@ public class DealActivity extends AppCompatActivity {
         }
         mDatabaseReference.child(deal.getId()).removeValue();
 
+        Log.d("image name", deal.getImageName());
+        if(deal.getImageName() != null && deal.getImageName().isEmpty() == false) {
+            StorageReference picRef = FirebaseUtil.mStorage.getReference().child(deal.getImageName());
+            picRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d("Delete Image", "Image Successfully Deleted");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("Delete Image", e.getMessage());
+                }
+            });
+        }
+
     }
     private void backToList() {
         Intent intent = new Intent(this, ListActivity.class);
@@ -175,5 +193,4 @@ public class DealActivity extends AppCompatActivity {
                     .into(imageView);
         }
     }
-
 }
